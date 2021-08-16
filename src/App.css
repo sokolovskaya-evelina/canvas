@@ -1,0 +1,56 @@
+.mainContainer {
+    display: flex;
+    border: 1px solid black;
+}
+
+.figureContainer {
+    border-right: 1px solid black;
+    flex-grow: 1;
+}
+
+.canvasContainer {
+    flex-grow: 3;
+}
+
+.header {
+    height: 60px;
+    border-bottom: 1px solid black;
+    background-color: #c7c7c7;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.canvasWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.canvasDropWrapper {
+    border: 2px dashed black;
+}
+
+.figuresWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.figure {
+    width: 150px;
+    height: 75px;
+    margin-top: 20px;
+}
+
+.ellipse {
+    background: #54ff32;
+    border: 1px solid #246f15;
+    border-radius: 50%;
+}
+.rectangle {
+    background: #3265ff;
+    border: 1px solid #152c6f;
+}
+
