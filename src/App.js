@@ -1,11 +1,19 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Canvas from "./components/canvas/Canvas";
 import './App.css'
+import {fabric} from 'fabric'
 
 function App() {
-    const [drag, setDrag] = useState();
+    const [drag, setDrag] = useState()
+    const [canvas, setCanvas] = useState()
+
+
+    useEffect(() => {
+        window.addEventListener('keypress', deleteElement)
+        return  () => window.removeEventListener('keypress', deleteElement);
+    })
+
     const onDragStartHandler = e => {
-        // console.log(e.currentTarget,'_+_+_+_+_')
         e.preventDefault()
         setDrag(true)
     }
@@ -23,13 +31,91 @@ function App() {
     }
 
     const addElementOnCanvas = type => {
+        let element
         if (type === 'rect') {
-            console.log('add rect')
+            element = new fabric.Rect({
+                width: 150,
+                height: 80,
+                fill: '#3265ff',
+                stroke: '#152c6f',
+            })
         }
         if (type === 'ellipse') {
-            console.log('add ellipse')
+            element = new fabric.Ellipse({
+                rx: 75,
+                ry: 40,
+                fill: '#54ff32',
+                stroke: '#246f15'
+            })
         }
+        canvas.add(element)
     }
+
+    const deleteElement = e => {
+        const key = e.code
+        if (key === 'KeyD') {
+            const activeObj = canvas.getActiveObject()
+            canvas.remove(activeObj)
+        }
+        // у меня на клавиатуре не работала клавиша Delete, поэтому я поставила обработчик на клавишу D
+        // в if условие можно заменить на key === 'Delete'
+    }
+
+    if (canvas) {
+        let left1 = 0;
+        let top1 = 0;
+        let scale1x = 0;
+        let scale1y = 0;
+        let width1 = 0;
+        let height1 = 0;
+
+        canvas.on('object:moving', e => {
+            let obj = e.target;
+            if (obj.height > obj.canvas.height || obj.height > obj.canvas.width) {
+                return;
+            }
+            obj.setCoords();
+            if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0) {
+                obj.top = Math.max(obj.top, obj.top - obj.getBoundingRect().top);
+                obj.left = Math.max(obj.left, obj.left - obj.getBoundingRect().left);
+            }
+            if (obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height || obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width) {
+                obj.top = Math.min(obj.top, obj.canvas.height - obj.getBoundingRect().height + obj.top - obj.getBoundingRect().top);
+                obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
+            }
+        });
+        canvas.on('object:scaling', e => {
+            let obj = e.target;
+            obj.setCoords();
+            let brNew = obj.getBoundingRect();
+
+            if (((brNew.width + brNew.left) >= obj.canvas.width) || ((brNew.height + brNew.top) >= obj.canvas.height) || ((brNew.left < 0) || (brNew.top < 0))) {
+                obj.left = left1;
+                obj.top = top1;
+                obj.scaleX = scale1x;
+                obj.scaleY = scale1y;
+                obj.width = width1;
+                obj.height = height1;
+            } else {
+                left1 = obj.left;
+                top1 = obj.top;
+                scale1x = obj.scaleX;
+                scale1y = obj.scaleY;
+                width1 = obj.width;
+                height1 = obj.height;
+            }
+        });
+    }
+
+
+    //
+    // var json = canvas.toJSON();
+    // alert(JSON.stringify(json));
+    // canvas.loadFromJSON(json, function() {
+    //     canvas.renderAll();
+    // });
+
+
     return (
         <div className='mainContainer'>
             <div className='figureContainer'>
@@ -48,21 +134,20 @@ function App() {
                            onDrop={onDropHandler}
                            className='canvasDropWrapper'
                     >
-                        <Canvas/>
+                        <Canvas setCanvas={setCanvas}/>
                     </div>
                     : <div onDragStart={onDragStartHandler}
                            onDragLeave={onDragLeaveHandler}
                            onDragOver={onDragStartHandler}
                            className='canvasWrapper'
                     >
-                        <Canvas/>
+                        <Canvas setCanvas={setCanvas}/>
                     </div>
                 }
-
             </div>
         </div>
 
-    );
+    )
 }
 
-export default App;
+export default App

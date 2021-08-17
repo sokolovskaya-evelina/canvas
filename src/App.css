@@ -1,15 +1,18 @@
 .mainContainer {
+    box-sizing: border-box;
     display: flex;
+    width: 800px;
+    height: 561px;
     border: 1px solid black;
 }
 
 .figureContainer {
+    width: 300px;
     border-right: 1px solid black;
-    flex-grow: 1;
 }
 
 .canvasContainer {
-    flex-grow: 3;
+    width: 500px;
 }
 
 .header {
@@ -29,6 +32,8 @@
 }
 
 .canvasDropWrapper {
+    height: 500px;
+    width: 500px;
     border: 2px dashed black;
 }
 
@@ -39,8 +44,8 @@
 }
 
 .figure {
+    height: 80px;
     width: 150px;
-    height: 75px;
     margin-top: 20px;
 }
 
