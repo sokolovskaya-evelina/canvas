@@ -1,17 +1,23 @@
 import React, {useEffect, useState} from "react";
-import Canvas from "./components/canvas/Canvas";
 import './App.css'
 import {fabric} from 'fabric'
 
 function App() {
     const [drag, setDrag] = useState()
-    const [canvas, setCanvas] = useState()
-
+    const [canvas, setCanvas] = useState('')
 
     useEffect(() => {
+        setCanvas(initCanvas());
         window.addEventListener('keypress', deleteElement)
-        return  () => window.removeEventListener('keypress', deleteElement);
-    })
+        return () => window.removeEventListener('keypress', deleteElement);
+    }, [])
+
+    const initCanvas = () => (
+        new fabric.Canvas('canvas', {
+            height: 500,
+            width: 500
+        })
+    )
 
     const onDragStartHandler = e => {
         e.preventDefault()
@@ -60,7 +66,6 @@ function App() {
         // у меня на клавиатуре не работала клавиша Delete, поэтому я поставила обработчик на клавишу D
         // в if условие можно заменить на key === 'Delete'
     }
-
     if (canvas) {
         let left1 = 0;
         let top1 = 0;
@@ -107,15 +112,6 @@ function App() {
         });
     }
 
-
-    //
-    // var json = canvas.toJSON();
-    // alert(JSON.stringify(json));
-    // canvas.loadFromJSON(json, function() {
-    //     canvas.renderAll();
-    // });
-
-
     return (
         <div className='mainContainer'>
             <div className='figureContainer'>
@@ -127,23 +123,14 @@ function App() {
             </div>
             <div className='canvasContainer'>
                 <div className='header'>Canvas</div>
-                {drag
-                    ? <div onDragStart={onDragStartHandler}
-                           onDragLeave={onDragLeaveHandler}
-                           onDragOver={onDragStartHandler}
-                           onDrop={onDropHandler}
-                           className='canvasDropWrapper'
-                    >
-                        <Canvas setCanvas={setCanvas}/>
-                    </div>
-                    : <div onDragStart={onDragStartHandler}
-                           onDragLeave={onDragLeaveHandler}
-                           onDragOver={onDragStartHandler}
-                           className='canvasWrapper'
-                    >
-                        <Canvas setCanvas={setCanvas}/>
-                    </div>
-                }
+                <div onDragStart={onDragStartHandler}
+                     onDragLeave={onDragLeaveHandler}
+                     onDragOver={onDragStartHandler}
+                     onDrop={onDropHandler}
+                     className={drag ? 'canvasDropWrapper' : 'canvasWrapper'}
+                >
+                    <canvas id='canvas'/>
+                </div>
             </div>
         </div>
 
